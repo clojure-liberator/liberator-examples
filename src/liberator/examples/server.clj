@@ -1,11 +1,11 @@
-(ns examples.server
+(ns liberator.examples.server
   (:require
    [ring.adapter.jetty :as jetty])
   (:use
-   [examples :only [assemble-routes]]
+   [compojure.handler :only [api]]
+   [liberator.examples :only [assemble-routes]]
    [ring.middleware.multipart-params :only [wrap-multipart-params]]
-   [ring.util.response :only [header]]
-   [compojure.handler :only [api]]))
+   [ring.util.response :only [header]]))
 
 (def handler
   (-> (assemble-routes)
@@ -20,5 +20,3 @@
      (start {:port (Integer/parseInt port)}))
   ([]
      (-main "8000")))
-
-

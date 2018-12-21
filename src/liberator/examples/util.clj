@@ -1,17 +1,17 @@
-(ns examples.util
+(ns liberator.examples.util
   (:require
    [clojure.java.io :as io])
   (:use
-   [ring.util.mime-type :only [ext-mime-type]]
    [cljs.closure :only [build]]
    [compojure.core :only [routes ANY]]
-   [liberator.core :only [defresource]]))
+   [liberator.core :only [defresource]]
+   [ring.util.mime-type :only [ext-mime-type]]))
 
 (defn wrap-binder [handler key value]
   (fn [request]
     (handler (assoc request key value))))
 
-(let [static-dir (io/file "examples/static")]
+(let [static-dir (io/file "static")]
   (defresource static
 
     :available-media-types
@@ -39,7 +39,7 @@
    (.isFile f) (.lastModified f)
    (.isDirectory f) (reduce max (map last-modified (.listFiles f)))))
 
-(let [srcdir (io/file "examples/cljs")
+(let [srcdir (io/file "cljs")
       workdir (get-work-dir)]
   (defresource clojurescript-resource
     :available-media-types ["text/javascript"]
@@ -59,4 +59,3 @@
   (routes
    (ANY [(str prefix "/:path") :path #".*js"] [path]
         (wrap-binder clojurescript-resource ::jspath path))))
-

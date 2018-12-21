@@ -1,6 +1,6 @@
-(ns examples.olympics
-  (:use [clojure.string :only [split]]
-        [clojure.java.io :only [file reader]]))
+(ns liberator.examples.olympics
+  (:use [clojure.java.io :only [file reader]]
+        [clojure.string :only [split]]))
 
 ;; http://download.freebase.com/datadumps/latest/browse/olympics/olympic_games.tsv
 
@@ -12,7 +12,7 @@
     (map #(zipmap header %) rows)))
 
 (def dataset
-  (parse-dataset (file "examples/data/olympic_games.tsv")))
+  (parse-dataset (file "data/olympic_games.tsv")))
 
 (defn get-olympic-games-index []
   (->> dataset
@@ -29,7 +29,7 @@
       (update-in ["competitions"] #(split % #","))))
 
 (def athletes
-  (parse-dataset (file "examples/data/olympic_athlete.tsv")))
+  (parse-dataset (file "data/olympic_athlete.tsv")))
 
 (defn get-athletes-sample []
   (map #(get % "name") (map #(select-keys % ["name"]) (take 10 athletes))))
@@ -38,4 +38,3 @@
 
 
 ;; (spit (clojure.java.io/file "/tmp/foo.clj") (with-out-str (doall (map prn (map #(select-keys % ["name"]) (take 10 athletes))))))
-

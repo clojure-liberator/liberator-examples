@@ -1,16 +1,16 @@
-(ns examples
-  (:require [examples.olympics :as olympics]
+(ns liberator.examples
+  (:require [clojure.data.json :as json]
             [clojure.java.io :as io]
-            [clojure.data.json :as json]
-            [liberator.dev :as dev])
-  (:use [liberator.core :only [defresource request-method-in]]
-        [liberator.representation :only [Representation ring-response]]
+            [liberator.dev :as dev]
+            [liberator.examples.olympics :as olympics])
+  (:use [clojure.string :only [split]]
         [compojure.core :only [context ANY routes defroutes]]
+        [hiccup.element :only [javascript-tag]]
         [hiccup.page :only [html5]]
-        [clojure.string :only [split]]
-        [examples.util :only [wrap-binder static clojurescript-resource create-cljs-route]]
-        [examples.collection]
-        [hiccup.element :only [javascript-tag]]))
+        [liberator.core :only [defresource request-method-in]]
+        [liberator.examples.collection]
+        [liberator.examples.util :only [wrap-binder static clojurescript-resource create-cljs-route]]
+        [liberator.representation :only [Representation ring-response]]))
 
 ;; The classic 'Hello World' example.
 (defresource hello-world
@@ -20,7 +20,7 @@
 
 ;; Language negotiation
 (defresource hello-george
-  :available-media-types ["text/plain" "text/html"] 
+  :available-media-types ["text/plain" "text/html"]
   :handle-ok (fn [context] (case (get-in context [:representation :language])
                              "en" "Hello George!"
                              "bg" "Zdravej, Georgi"
@@ -53,7 +53,7 @@
   :handle-ok (fn [_] (ring-response (olympics/get-olympic-games-index)
                                     {:headers {"Cache-Control" "public,max-age=60s"}})))
 
-;; We define a view that will pull in 
+;; We define a view that will pull in
 (defrecord OlympicsHtmlPage [main]
   Representation
   (as-response [this context]
@@ -107,7 +107,7 @@
              [:h1 "Drag Drop Demo"]
 ;;             [:div#dropArea {:style "background: white; border: 1px solid black"} "Olympic Event - drag athletes here to add"]
              [:div#content]
-            
+
              (javascript-tag main)])}))
 
 (defresource drag-drop
@@ -128,10 +128,10 @@
   :available-charsets ["utf-8"]
   :handle-ok (olympics/get-athletes-sample))
 
-(defresource index 
+(defresource index
   :available-media-types ["text/html"]
   :handle-ok (fn [context]
-               (html5 [:head [:title "Liberator examples"]] 
+               (html5 [:head [:title "Liberator examples"]]
                       [:body
                        [:h1 "Liberator Examples"]
                        [:ul
@@ -141,7 +141,7 @@
                         [:li [:a {:href "/olympics/index-fancy"} "Olympic Games, fancy"]]
                         [:li [:a {:href "/drag-drop"} "Drag and Drop (featuring clojure script)"]]
                         [:li [:a {:href "/drag-drop/athletes"} "Athletes"]]
-                        [:li [:a {:href "/x-liberator/requests/"} "Liberator request dump"]]]]))) 
+                        [:li [:a {:href "/x-liberator/requests/"} "Liberator request dump"]]]])))
 
 (defn assemble-routes []
   (->
@@ -161,7 +161,5 @@
     (ANY ["/collection/:id" :id #".*"] [id] (entry-resource id))
     (ANY "/collection" [] list-resource))
 
-   
+
    (dev/wrap-trace :ui :header)))
-
-

@@ -1,7 +1,7 @@
-(ns examples.collection
-  (:require [liberator.core :refer (defresource by-method)]
+(ns liberator.examples.collection
+  (:require [clojure.data.json :as json]
             [clojure.java.io :as io]
-            [clojure.data.json :as json]
+            [liberator.core :refer (defresource by-method)]
             [liberator.dev :refer (wrap-trace)])
   (:import java.net.URL))
 
@@ -35,7 +35,7 @@
 
 (defn check-content-type [ctx content-types]
   (if (#{:put :post} (get-in ctx [:request :request-method]))
-    (or 
+    (or
      (some #{(get-in ctx [:request :headers "content-type"])}
            content-types)
      [false {:message "Unsupported Content-Type"}])
